@@ -81,20 +81,13 @@ bool Adafruit_MAX31856::begin(void) {
   if (!initialized)
     return false;
 
-  // assert on any fault
-  writeRegister8(MAX31856_MASK_REG, 0x0);
+  //set default values in case it was not power cycled
+  byte reg[12] = {0x00, 0x03, 0xff, 0x7f, 0xc0, 0x7f, 0xff, 0x80, 0x00, 0x00, 0x00, 0x00};
+  for (int i=0; i<12; i++)
+    writeRegister8(i, reg[i]);
 
-  // enable open circuit fault detection
-  writeRegister8(MAX31856_CR0_REG, MAX31856_CR0_OCFAULT0);
-
-  // set cold junction temperature offset to zero
-  writeRegister8(MAX31856_CJTO_REG, 0x0);
-
-  // set Type K by default
-  setThermocoupleType(MAX31856_TCTYPE_K);
-
-  // set One-Shot conversion mode
-  setConversionMode(MAX31856_ONESHOT);
+  // set continuous conversion mode
+  setConversionMode(MAX31856_CONTINUOUS);
 
   return true;
 }
